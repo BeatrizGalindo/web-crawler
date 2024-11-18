@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 from collections import deque
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
@@ -9,9 +10,9 @@ import requests
 
 logging.basicConfig(level=logging.INFO)
 
-def crawl_website(start_url):
+def crawl_website(start_url, max_depth=3):
     """Crawl all links on the same domain as the start URL."""
-    queue = deque([start_url])
+    queue = deque([(start_url, 0)])
     visited = set()
     list_of_all_monzo_links = set()
 
@@ -26,10 +27,10 @@ def crawl_website(start_url):
         rp = None  # Disable robots.txt compliance if it fails
 
     while queue:
-        url = queue.popleft()
+        url, depth = queue.popleft()
 
         # Skip visited or disallowed URLs
-        if url in visited or (rp and not rp.can_fetch("*", url)):
+        if url in visited or (rp and not rp.can_fetch("*", url)) or depth >= max_depth:
             continue
 
         try:
@@ -37,19 +38,23 @@ def crawl_website(start_url):
             response.raise_for_status()  # Ensure HTTP errors are raised
             soup = BeautifulSoup(response.text, "html.parser")
 
-            logging.info(f"Visiting: {url}")
+            # logging.info(f"Visiting: {url}")
             visited.add(url)  # Mark as visited
 
             # Extract and process links
-            all_links = soup.find_all("a", attrs={"href": re.compile("^https?://.*")})
+            # all_links = soup.find_all("a", attrs={"href": re.compile("^https?://.*")})
+            all_links = soup.find_all("a", href=True)
             for link in all_links:
                 href = link["href"]
                 absolute_link = urljoin(url, href)
 
-                if urlparse(absolute_link).netloc == urlparse(start_url).netloc:
+                if urlparse(absolute_link).netloc == urlparse(start_url).netloc and absolute_link not in visited and absolute_link not in list_of_all_monzo_links:
                     if absolute_link not in visited:
-                        queue.append(absolute_link)
+                        queue.append((absolute_link, depth +1))
                         list_of_all_monzo_links.add(absolute_link)
+
+
+            # time.sleep(1)
 
         except Exception as e:
             logging.error(f"Error processing {url}: {e}")
