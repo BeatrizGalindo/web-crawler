@@ -1,36 +1,64 @@
+import logging
 import re
 from collections import deque
 from urllib.parse import urljoin, urlparse
+from urllib.robotparser import RobotFileParser
 
 from bs4 import BeautifulSoup
 import requests
 
-start_url = "https://monzo.com/"
-queue = deque([start_url])
-visited = set()
-list_of_all_monzo_links = []
+logging.basicConfig(level=logging.INFO)
 
-while queue:
-    url = queue.popleft()
-    if url not in visited:
-        page_to_scrape = requests.get(url, timeout=10)
-        soup = BeautifulSoup(page_to_scrape.text, "html.parser")
+def crawl_website(start_url):
+    """Crawl all links on the same domain as the start URL."""
+    queue = deque([start_url])
+    visited = set()
+    list_of_all_monzo_links = set()
 
-        all_links = soup.find_all("a", attrs={"href": re.compile("^https?://.*")})
+    # Parse robots.txt
+    robots_url = urljoin(start_url, "/robots.txt")
+    rp = RobotFileParser()
+    rp.set_url(robots_url)
+    try:
+        rp.read()
+    except Exception as e:
+        logging.warning(f"Could not read robots.txt: {e}")
+        rp = None  # Disable robots.txt compliance if it fails
 
-        # print(f"Visiting: {url}")
-        # print(f"Found {len(all_links)} total links")
+    while queue:
+        url = queue.popleft()
 
-        for link in all_links:
-            href = link["href"]
-            absolute_link = urljoin(url, href)  # Handle relative links
-            if urlparse(absolute_link).netloc == urlparse(start_url).netloc:
-                if absolute_link not in visited:
-                    queue.append(absolute_link)
-                    list_of_all_monzo_links.append(absolute_link)
-        # print(f"Queue size: {len(queue)}")
-        # print("-----")
+        # Skip visited or disallowed URLs
+        if url in visited or (rp and not rp.can_fetch("*", url)):
+            continue
 
-        visited.add(url)
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()  # Ensure HTTP errors are raised
+            soup = BeautifulSoup(response.text, "html.parser")
 
-print(list_of_all_monzo_links)
+            logging.info(f"Visiting: {url}")
+            visited.add(url)  # Mark as visited
+
+            # Extract and process links
+            all_links = soup.find_all("a", attrs={"href": re.compile("^https?://.*")})
+            for link in all_links:
+                href = link["href"]
+                absolute_link = urljoin(url, href)
+
+                if urlparse(absolute_link).netloc == urlparse(start_url).netloc:
+                    if absolute_link not in visited:
+                        queue.append(absolute_link)
+                        list_of_all_monzo_links.add(absolute_link)
+
+        except Exception as e:
+            logging.error(f"Error processing {url}: {e}")
+
+    return list_of_all_monzo_links
+
+if __name__ == "__main__":
+    start_url = "https://monzo.com/"
+    links = crawl_website(start_url)
+    print(f"Found {len(links)} links:")
+    for link in links:
+        print(link)
