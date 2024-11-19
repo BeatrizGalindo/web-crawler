@@ -102,6 +102,10 @@
             <button type="submit">Start Crawling</button>
         </form>
 
+        {% if loading_message %}
+        <p class="loading-message">{{ loading_message }}</p>
+        {% endif %}
+
         {% if message %}
         <p class="message">{{ message }}</p>
         {% endif %}
@@ -110,24 +114,33 @@
         <p class="num-visited">Total number of links visited: {{ num_visited }}</p>
         {% endif %}
 
+
+
         {% if crawled_links %}
             <h2>Crawled URLs:</h2>
             <ul style="list-style-type: none; padding-left: 0;">
                 {% for url, links in crawled_links.items() %}
                     <li style="margin-bottom: 20px; background-color: #f9f9f9; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                        Visiting {{ url }}, in here we found these links:
-                        <ul style="list-style-type: disc; padding-left: 20px;">
-                            {% for link in links %}
-                                <li style="margin: 5px 0; font-size: 1.1em; color: #007BFF;">
-                                    <a href="{{ link }}" style="text-decoration: none; color: inherit; font-weight: bold;">{{ link }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        Visiting {{ url }},
+                        {% if links %}
+                            in here we found these links:
+                            <ul style="list-style-type: disc; padding-left: 20px;">
+                                {% for link in links %}
+                                    <li style="margin: 5px 0; font-size: 1.1em; color: #007BFF;">
+                                        <a href="{{ link }}" style="text-decoration: none; color: inherit; font-weight: bold;">{{ link }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            and no links found.
+                        {% endif %}
                     </li>
-                {% endfor %}     
-        
-    </ul>
-{% endif %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+
+
 
     </div>
 </body>
