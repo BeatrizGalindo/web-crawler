@@ -29,20 +29,7 @@ jobs:
         python -m venv venv
         source venv/bin/activate
         pip install -r requirements.txt
-        pip freeze 
-
-    - name: Install requests manually
-      run: |
-        source venv/bin/activate
-        pip install requests
-
-
-    # Step 4: Upload the virtual environment as an artifact
-    - name: Upload virtual environment
-      uses: actions/upload-artifact@v3
-      with:
-        name: venv
-        path: venv
+        pip freeze  # Ensure all dependencies are installed
 
   tests:
     runs-on: ubuntu-latest
@@ -53,18 +40,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Download the virtual environment artifact
-    - name: Download virtual environment
-      uses: actions/download-artifact@v3
-      with:
-        name: venv
-        path: venv
-
-    # Step 3: Set up Python environment
+    # Step 2: Set up Python environment
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13'  
+        python-version: '3.13'
+
+    # Step 3: Install dependencies (re-create virtual environment and install dependencies)
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        pip freeze  # Verify that all dependencies, including requests, are installed
 
     # Step 4: Run tests
     - name: Run tests
