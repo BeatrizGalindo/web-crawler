@@ -1,6 +1,6 @@
+import os
 from flask import Flask, request, render_template_string
 import logging
-
 from web_crawler import crawl_website
 
 app = Flask(__name__)
@@ -29,7 +29,6 @@ HTML_TEMPLATE = """
 </html>
 """
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     crawled_urls = []
@@ -45,7 +44,7 @@ def index():
     return render_template_string(HTML_TEMPLATE, crawled_urls=crawled_urls)
 
 
-
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+    # Use Render's dynamic port or default to 5000 for local testing
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
