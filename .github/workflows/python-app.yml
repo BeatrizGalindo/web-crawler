@@ -30,6 +30,12 @@ jobs:
         source venv/bin/activate
         pip install -r requirements.txt
 
+    - name: Install requests manually
+      run: |
+        source venv/bin/activate
+        pip install requests
+
+
     # Step 4: Upload the virtual environment as an artifact
     - name: Upload virtual environment
       uses: actions/upload-artifact@v3
