@@ -25,7 +25,7 @@ def fetch_url(session, url):
     return None  # Return None if an error occurs
 
 
-def crawl_website(start_url, max_depth=1, max_workers=5):
+def crawl_website(start_url, max_depth=2, max_workers=10):
     """
     Crawls a website starting from the given URL, up to a specified depth.
     Uses multi-threading to fetch URLs concurrently.
