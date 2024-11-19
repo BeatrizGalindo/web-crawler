@@ -7,9 +7,6 @@ from bs4 import BeautifulSoup
 import requests
 from concurrent.futures import ThreadPoolExecutor
 
-# Configure logging to display info-level messages with timestamps
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
 
 def fetch_url(session, url):
     """
@@ -105,16 +102,3 @@ def crawl_website(start_url, max_depth=2, max_workers=10):
 
     return visited  # Return the set of visited URLs
 
-
-if __name__ == "__main__":
-    start_url = input("Enter the URL to start crawling (e.g., https://example.com/): ").strip()
-
-    # Ensure the input is not empty
-    if not start_url:
-        logging.error("No URL provided. Exiting...")
-    else:
-        # Perform the crawl and collect all discovered links
-        links = crawl_website(start_url)
-        logging.info(f"Found {len(links)} links:")
-        for link in links:
-            print(link)
