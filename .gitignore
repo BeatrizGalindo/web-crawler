@@ -1,0 +1,12 @@
+# Ignore all __pycache__ directories and their contents
+**/__pycache__/*
+
+# Ignore coverage report files
+.coverage
+
+# Ignore JetBrains IDE configuration files
+.idea/
+
+# Ignore templates directory
+templates/
+venv/
