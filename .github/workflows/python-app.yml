@@ -59,3 +59,15 @@ jobs:
       run: |
         source venv/bin/activate
         python -m unittest tests.web_crawler_test.TestWebCrawler
+
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deployment
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          curl -X POST $RENDER_DEPLOY_HOOK
