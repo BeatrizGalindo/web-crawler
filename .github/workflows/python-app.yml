@@ -30,25 +30,37 @@ jobs:
         source venv/bin/activate
         pip install -r requirements.txt
 
-        
+    # Step 4: Upload the virtual environment as an artifact
+    - name: Upload virtual environment
+      uses: actions/upload-artifact@v3
+      with:
+        name: venv
+        path: venv
+
   tests:
     runs-on: ubuntu-latest
+    needs: build  # Ensure that this job runs after the build job
+
     steps:
-    # Step 4: Run tests (optional, but recommended)
+    # Step 1: Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Download the virtual environment artifact
+    - name: Download virtual environment
+      uses: actions/download-artifact@v3
+      with:
+        name: venv
+        path: venv
+
+    # Step 3: Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'  
+
+    # Step 4: Run tests
     - name: Run tests
       run: |
         source venv/bin/activate
         python -m unittest tests.web_crawler_test.TestWebCrawler
-
-
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: [build, tests]
-  #   steps:
-  #     - name: Deploy
-  #       # Only run this step if the branch is main
-  #       if: github.ref == 'refs/heads/main'
-  #       env:
-  #         deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-  #       run: |
-  #         curl "$deploy_url"
