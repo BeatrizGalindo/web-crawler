@@ -40,6 +40,7 @@ def crawl_website(start_url, max_depth=2, max_workers=10):
 
     queue = deque([(start_url, 0)])  # Queue for URLs to crawl, starting with the root URL at depth 0
     visited = set()  # Set to track visited URLs to avoid re-crawling
+    found_links = {}
 
     # Parse and read robots.txt to respect crawling rules
     robots_url = urljoin(start_url, "/robots.txt")
@@ -79,6 +80,7 @@ def crawl_website(start_url, max_depth=2, max_workers=10):
 
                 # Find all hyperlinks on the page
                 all_links = soup.find_all("a", href=True)
+                links_on_page = []
                 for link in all_links:
                     href = link["href"]
                     try:
@@ -92,13 +94,19 @@ def crawl_website(start_url, max_depth=2, max_workers=10):
                         if (parsed_link.netloc == parsed_start.netloc and
                                 absolute_link not in visited):
                             queue.append((absolute_link, depth + 1))  # Add the link to the queue for crawling
+                            links_on_page.append(absolute_link)
                     except Exception as e:
                         logging.warning(f"Error processing link {href} on {url}: {e}")
+
+                if links_on_page:
+                    found_links[url] = links_on_page
+                else:
+                    found_links[url] = []
     finally:
         session.close()  # Close the session after crawling completes
 
     elapsed_time = time.time() - start_time  # Calculate elapsed time
     logging.info(f"Crawl completed in {elapsed_time:.2f} seconds.")  # Log the total time taken
 
-    return visited  # Return the set of visited URLs
+    return found_links  # Return the set of visited URLs and its length
 
