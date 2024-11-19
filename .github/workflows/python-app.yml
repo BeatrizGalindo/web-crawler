@@ -1,0 +1,54 @@
+name: Python CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'  # Specify your desired Python version
+
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+
+        
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    # Step 4: Run tests (optional, but recommended)
+    - name: Run tests
+      run: |
+        source venv/bin/activate
+        python -m unittest tests.web_crawler_test.TestWebCrawler
+
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [build, tests]
+  #   steps:
+  #     - name: Deploy
+  #       # Only run this step if the branch is main
+  #       if: github.ref == 'refs/heads/main'
+  #       env:
+  #         deploy_url: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+  #       run: |
+  #         curl "$deploy_url"
