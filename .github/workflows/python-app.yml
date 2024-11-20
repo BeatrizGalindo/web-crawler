@@ -26,10 +26,7 @@ jobs:
     # Step 3: Install dependencies
     - name: Install dependencies
       run: |
-        python -m venv venv
-        source venv/bin/activate
         pip install -r requirements.txt
-        pip freeze  # Ensure all dependencies are installed
 
   tests:
     runs-on: ubuntu-latest
@@ -49,15 +46,11 @@ jobs:
     # Step 3: Install dependencies (re-create virtual environment and install dependencies)
     - name: Install dependencies
       run: |
-        python -m venv venv
-        source venv/bin/activate
         pip install -r requirements.txt
-        pip freeze  # Verify that all dependencies, including requests, are installed
 
     # Step 4: Run tests
     - name: Run tests
       run: |
-        source venv/bin/activate
         coverage run -m unittest tests.web_crawler_test.TestWebCrawler
         coverage report
 
