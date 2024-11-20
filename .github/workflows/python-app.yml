@@ -33,8 +33,22 @@ jobs:
     needs: build  # Ensure that this job runs after the build job
 
     steps:
+    # Step 1: Checkout the repository code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-    # Step 1: Run tests
+    # Step 2: Set up Python environment
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+
+    # Step 3: Install dependencies (re-create virtual environment and install dependencies)
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    # Step 4: Run tests
     - name: Run tests
       run: |
         coverage run -m unittest tests.web_crawler_test.TestWebCrawler
