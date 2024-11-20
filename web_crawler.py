@@ -18,7 +18,7 @@ def fetch_url(session, url):
         response.raise_for_status()  # Raise an error for HTTP errors like 404
         return response.text  # Return the response content as text
     except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to fetch {url}: {e}")
+        logging.warning(f"Failed to fetch {url}: {e}")
     return None  # Return None if an error occurs
 
 
