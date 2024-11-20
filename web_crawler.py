@@ -8,6 +8,10 @@ import requests
 from concurrent.futures import ThreadPoolExecutor
 
 
+logging.basicConfig(
+    level=logging.DEBUG,  # Set to DEBUG to see all logs
+)
+
 def fetch_url(session, url):
     """
     Fetches the content of a URL using the provided HTTP session.
@@ -22,7 +26,7 @@ def fetch_url(session, url):
     return None  # Return None if an error occurs
 
 
-def crawl_website(start_url, max_depth=2, max_workers=10):
+def crawl_website(start_url, max_depth=2, max_workers=5):
     """
     Crawls a website starting from the given URL, up to a specified depth.
     Uses multi-threading to fetch URLs concurrently.
@@ -88,12 +92,16 @@ def crawl_website(start_url, max_depth=2, max_workers=10):
                         encoded_href = quote(href, safe=':/#?=&')
                         absolute_link = urljoin(url, encoded_href)
 
+                        # Strip fragment identifiers
+                        absolute_link = urlparse(absolute_link)._replace(fragment='').geturl()
+
                         # Ensure the link belongs to the same domain and hasn't been visited
                         parsed_start = urlparse(start_url)
-                        parsed_link = urlparse(absolute_link)
-                        if (parsed_link.netloc == parsed_start.netloc and
+                        parsed_absolute_link = urlparse(absolute_link)
+                        if (parsed_absolute_link.netloc == parsed_start.netloc and
                                 absolute_link not in visited):
                             queue.append((absolute_link, depth + 1))  # Add the link to the queue for crawling
+                            logging.info(f"Visited URL: {absolute_link}")
                             links_on_page.append(absolute_link)
                     except Exception as e:
                         logging.warning(f"Error processing link {href} on {url}: {e}")
