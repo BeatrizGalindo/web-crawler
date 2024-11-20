@@ -8,5 +8,4 @@
 .idea/
 
 # Ignore templates directory
-templates/
 venv/
