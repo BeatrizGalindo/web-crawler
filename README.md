@@ -16,6 +16,12 @@ The crawler uses asyncio to fetch URLs concurrently and respects `robots.txt` ru
 - Python 3.13+
 - pip
 
+To use a virtual environment:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
 To install the required dependencies, run:
 
 ```bash
@@ -25,7 +31,7 @@ pip install -r requirements.txt
 ### Run the app
 Use the following command to run the app on your terminal. 
 ```bash
-python app.py 
+python3 app.py 
 ```
 
 ### Access the app
@@ -35,8 +41,7 @@ The webserver is now accessible at [localhost:5001](http://127.0.0.1:5001)
 Unit tests are provided to validate the functionality of the crawler. 
 Run the tests using the following command and you'll also be able to see the coverage of the tests:
 ```bash
-coverage run -m unittest tests.test_web_crawler_with_async.TestWebsiteCrawler
-coverage report
+pytest --cov=website_crawler tests/
 ```
 
 ## DESIGN OVERVIEW
@@ -94,7 +99,7 @@ allowing users to see the crawler in action via the web interface.
 You can find the website in this link: https://web-crawler-sy4n.onrender.com
 
 #### Notes
-- Due to running my code on the free tier, the server might be down due to inactivity. A refresh usually does the trick.
+- Due to running my code on the free tier, the server might be down due to inactivity. A refresh usually does the trick. If that doesn't work, sometimes I have to manually redeploy.
 - The crawler is obviously slower on Render.com compared to locally. This is out of my control, but I still wanted to implement a CI/CD pipeline. 
 
 

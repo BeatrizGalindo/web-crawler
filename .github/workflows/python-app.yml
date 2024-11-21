@@ -21,9 +21,15 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13'  
+        python-version: '3.13'
 
-    # Step 3: Install dependencies
+    # Step 3: Set up venv virtual environment
+    - name: Set up virtual environment
+      run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
+
+    # Step 4: Install dependencies
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
@@ -43,12 +49,18 @@ jobs:
       with:
         python-version: '3.13'
 
-    # Step 3: Install dependencies (re-create virtual environment and install dependencies)
+    # Step 3: Re-create virtual environment
+    - name: Set up virtual environment
+      run: |
+        python3 -m venv .venv
+        source .venv/bin/activate
+
+    # Step 4: Install dependencies
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
 
-    # Step 4: Run tests
+    # Step 5: Run tests
     - name: Run tests
       run: |
         pytest --cov=website_crawler tests/
