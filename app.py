@@ -32,5 +32,6 @@ def index():
 
 
 if __name__ == '__main__':
+    # Use Render's dynamic port or default to 5001 for local testing
     port = int(os.environ.get("PORT", 5001))
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=port)
