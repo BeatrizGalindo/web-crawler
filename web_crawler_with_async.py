@@ -16,7 +16,7 @@ class WebsiteCrawler:
         Handles exceptions to ensure errors do not stop the program.
         """
         try:
-            async with session.get(url, timeout=20) as response:
+            async with session.get(url) as response:
                 if response.status == 200:
                     return await response.text()
                 else:
@@ -34,12 +34,12 @@ class WebsiteCrawler:
 
         try:
             rp.set_url(robots_url)
-            rp.read()  # This may block; consider replacing with async HTTP request.
+            rp.read()
         except Exception as e:
-            logging.warning(f"Could not read robots.txt at {robots_url}: {e}")
+            logging.warning(f"Can't read robots file {robots_url}: {e}")
             return False  # Assume compliance failed if parsing errors occur.
 
-        return bool(rp)
+        return rp.can_fetch("*", start_url)
 
     def is_same_domain(self, base_url, link):
         """
