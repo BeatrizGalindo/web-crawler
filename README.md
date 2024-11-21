@@ -16,7 +16,7 @@ The crawler uses asyncio to fetch URLs concurrently and respects `robots.txt` ru
 - Python 3.13+
 - pip
 
-To use a virtual environment:
+To use a virtual environment, run:
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
