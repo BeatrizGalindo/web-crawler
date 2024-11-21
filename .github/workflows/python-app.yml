@@ -51,7 +51,7 @@ jobs:
     # Step 4: Run tests
     - name: Run tests
       run: |
-        coverage run -m unittest tests.web_crawler_test.TestWebCrawler
+        coverage run -m unittest tests.test_web_crawler_with_async.TestWebsiteCrawler
         coverage report
 
 
