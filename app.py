@@ -1,7 +1,7 @@
 import time
 
 from flask import Flask, request, render_template
-from web_crawler_with_async import crawl_website  # Assuming the above code is in a file named crawler.py
+from web_crawler_with_async import WebsiteCrawler  # Assuming the above code is in a file named crawler.py
 import os
 app = Flask(__name__)
 
@@ -11,9 +11,11 @@ def index():
         url = request.form.get('url')
         depth = int(request.form.get('depth', 2))  # Default depth to 2 if not provided
 
-        # Call the crawl logic
-        crawled_links = crawl_website(url, depth)
-        print(crawled_links)
+        # Create an instance of WebsiteCrawler
+        crawler = WebsiteCrawler()
+
+        # Use the crawl_website method to start the crawling process
+        crawled_links = crawler.crawl_website(url, depth)
 
         # Build a result string to show all found links
         results = []
@@ -26,9 +28,9 @@ def index():
         # Join all results with line breaks
         result = "".join(results)
 
-        return render_template('index.html', result=result, timestamp=int(time.time()))
+        return render_template('index.html', result=result)
 
-    return render_template('index.html', result=None,timestamp=int(time.time()))
+    return render_template('index.html', result=None)
 
 
 if __name__ == '__main__':
