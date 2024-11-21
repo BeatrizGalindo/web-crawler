@@ -93,6 +93,12 @@ allowing users to see the crawler in action via the web interface.
 
 You can find the website in this link: https://web-crawler-sy4n.onrender.com
 
+#### Notes
+- Due to running my code on the free tier, the server might be down due to inactivity. A refresh usually does the trick.
+- The crawler is obviously slower on Render.com compared to locally. This is out of my control, but I still wanted to implement a CI/CD pipeline. 
+
+
+
 
 ![RenderApp](images/Renderapp.png)
 
@@ -169,12 +175,13 @@ For this project, `lxml` was chosen for its speed and ability to handle poorly f
 This take home technical task was timeboxed to 4 hours, which means that I had a lot more ideas for improvements, 
 but they would not be feasible within the 4-hour timeline. On top of the improvements already mentioned, I list more below:
 
-- **Testing Coverage**: Expand test cases to cover more scenarios.
+- **Testing Coverage**: The test coverage is pretty good right now at 88%, but it could be better. If I had more time I'd expand the test cases to cover more scenarios.
 - **Cache**: Adding some caching system to access easily the most search links, in this case monzo.com.
 - **Politeness policy**: Adding Semaphore will help limit the number of concurrent tasks, preventing overloading resources and ensuring better control over execution.
 - **Feed-forward for long running crawling task**: The UX does not give any indication to the user that a search is ongoing. I did not prioritise this since you specifically said you don't care about UI/UX, but if I had more time I'd change that
+- **Linting**: If I had more time, I'd add linting for PEP8 for consistent style and readable code.
 - **Data Export**: Enable saving results to files in formats like JSON or CSV.
-- **Error handling**: app can crash due to long scraping times, need better error handling
+- **Error handling**: The app can crash due to long scraping times, with more than 4 hours I'd write better error handling
 - **More url parsing**: Certain links that start with 'javascript:' are erroneously picked up by my crawler. Would remove if i had more time.
 - **Backslash** : Certain links can be duplicated, because some have a trailing backslash ("monzo.com/") and some don't ("monzo.com"). These are seen as 
-- **Certain websites crawls display miscellaneous errors**: If I had more time I would inspect each of these errors and fix them.Example: An unexpected error occurred: 'utf-8' codec can't decode byte 0xe2 in position 10: invalid continuation byte
+- **Certain website crawls display miscellaneous errors**: If I had more time I would inspect each of these errors and fix them.Example: `An unexpected error occurred: 'utf-8' codec can't decode byte 0xe2 in position 10: invalid continuation byte`

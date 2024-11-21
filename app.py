@@ -3,7 +3,7 @@ import asyncio
 import requests
 from flask import Flask, request, render_template
 
-from web_crawler_with_async import WebsiteCrawler  # Assuming the above code is in a file named crawler.py
+from website_crawler import WebsiteCrawler
 import os
 app = Flask(__name__)
 

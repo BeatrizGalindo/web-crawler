@@ -1,7 +1,7 @@
 import pytest
 import aiohttp
 from unittest.mock import AsyncMock, patch, MagicMock
-from web_crawler_with_async import WebsiteCrawler  # Adjust this import as needed
+from website_crawler import WebsiteCrawler
 
 
 @pytest.fixture

@@ -68,7 +68,7 @@ class WebsiteCrawler:
 
         # Extract and normalize links
         all_links = soup.find_all("a", href=True)
-        links_on_page = set() # do not duplicate same link found on website multiple times
+        links_on_page = set() # Do not duplicate same link found on website multiple times
         for link in all_links:
             href = link.get('href')
             if href:  # Check if 'href' exists
