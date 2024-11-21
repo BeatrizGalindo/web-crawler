@@ -1,9 +1,27 @@
-import time
+import asyncio
 
+import requests
 from flask import Flask, request, render_template
+
 from web_crawler_with_async import WebsiteCrawler  # Assuming the above code is in a file named crawler.py
 import os
 app = Flask(__name__)
+
+# Global error handler for timeouts
+@app.errorhandler(asyncio.TimeoutError)
+def handle_timeout_error(error):
+    return render_template('index.html', result="<h3>Oops, there has been an error with the timeout. Please try again by refreshing the page.</h3>")
+
+# Global error handler for request exceptions
+@app.errorhandler(requests.exceptions.RequestException)
+def handle_request_exception(error):
+    return render_template('index.html', result="<h3>There was an issue with the website's accessibility. Please ensure the URL is correct and try again.</h3>")
+
+# Global error handler for any other exception
+@app.errorhandler(Exception)
+def handle_generic_error(error):
+    return render_template('index.html', result=f"<h3>An unexpected error occurred: {str(error)}</h3>")
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -17,16 +35,20 @@ def index():
         # Use the crawl_website method to start the crawling process
         crawled_links = crawler.crawl_website(url, depth)
 
-        # Build a result string to show all found links
-        results = []
-        for key, value in crawled_links.items():
-            links_html = "<ul>" + "".join(
-                f"<li><a href='{link}' target='_blank'>{link}</a></li>" for link in value) + "</ul>"
-            results.append(
-                f"<h3>For <a href='{key}' target='_blank'>{key}</a>, we found {len(value)} links:</h3>{links_html}")
+        # If no links are found, display a specific message
+        if not crawled_links:
+            result = "<h3>No links were found because the page blocked our request or denied us access :(</h3>"
+        else:
+            # Build a result string to show all found links
+            results = []
+            for key, value in crawled_links.items():
+                links_html = "<ul>" + "".join(
+                    f"<li><a href='{link}' target='_blank'>{link}</a></li>" for link in value) + "</ul>"
+                results.append(
+                    f"<h3>For <a href='{key}' target='_blank'>{key}</a>, we found {len(value)} links:</h3>{links_html}")
 
-        # Join all results with line breaks
-        result = "".join(results)
+            # Join all results with line breaks
+            result = "".join(results)
 
         return render_template('index.html', result=result)
 
