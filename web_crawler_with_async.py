@@ -6,8 +6,8 @@ from urllib.parse import urljoin, urlparse, quote
 import aiohttp
 from bs4 import BeautifulSoup
 
-visited = set()
-found_links = {}
+# visited = set()
+# found_links = {}
 
 async def fetch_url(session, url):
     """
@@ -86,7 +86,8 @@ async def process_url(session, url, base_url):
                 links_on_page.append(clean_link)
 
     found_links[url] = links_on_page
-    print(f"{url}: {links_on_page}")
+    # print(f"{url}: {links_on_page}")
+    # print()
     return links_on_page
 
 async def scrape_depth(base_urls, max_depth):
@@ -99,11 +100,41 @@ async def scrape_depth(base_urls, max_depth):
             print(f"Processing depth {depth}...")
             tasks = [process_url(session, url, base_urls[0]) for url in current_level]
             results = await asyncio.gather(*tasks)
+            # print(results)
 
             # Flatten results and remove already visited URLs
             next_level = set(link for links in results for link in links if link not in visited)
             current_level = next_level  # Prepare for the next depth
+    # print(found_links)
+    return found_links
 
-# Example usage
-base_urls = ["https://monzo.com"]  # Replace with your starting URL(s)
-asyncio.run(scrape_depth(base_urls, max_depth=2))
+def crawl_website(start_url, max_depth=2):
+    """Function to crawl website with user-defined start URL and depth."""
+    global visited
+    visited = set()
+    global found_links
+    found_links= {}
+    url_array = [start_url]
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(scrape_depth(url_array, max_depth))
+    finally:
+        loop.close()
+
+
+# def crawl_website(start_url, max_depth=2):
+#     """Function to crawl website with user-defined start URL and depth."""
+#     # loop = asyncio.get_event_loop()
+#     url_array = [start_url]
+#     return asyncio.run(scrape_depth(url_array, max_depth))
+#
+
+
+
+# # Example usage
+# base_url = ["https://monzo.com"]  # Replace with your starting URL(s)
+# asyncio.run(scrape_depth(base_url, max_depth=2))
+
+
+# crawl_website("https://www.designgurus.io",2)

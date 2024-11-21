@@ -10,139 +10,114 @@
             background-color: #f4f4f9;
             color: #333;
             margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+        }
+        main {
+            margin: 20px auto;
+            max-width: 800px;
+            background: white;
             padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            text-align: center;
-            color: #4CAF50;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
         form {
-            background: #ffffff;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
         label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            font-weight: bold;
         }
-        input[type="text"] {
-            width: 100%;
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 22px);
             padding: 10px;
-            margin-bottom: 20px;
+            margin-top: 5px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 16px;
         }
         button {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 15px;
             border: none;
+            padding: 10px 20px;
+            font-size: 16px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 1em;
         }
         button:hover {
             background-color: #45a049;
         }
-        h2 {
-            color: #333;
-            text-align: center;
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+        .result h3 {
+            font-size: 18px;
+            color: #4CAF50;
+            margin-top: 15px;
         }
-        .message {
-            color: red;
-            font-weight: bold;
+        .result ul {
+            margin-left: 20px;
+            padding-left: 20px;
+            list-style-type: disc;
+        }
+        .result ul li {
+            margin-bottom: 5px;
+        }
+        .result a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        }
+        footer {
             text-align: center;
             margin-top: 20px;
-        }
-        .num-visited {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .link-card {
-            background: #ffffff;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s;
-        }
-        .link-card:hover {
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 10px 0;
-        }
-        .error-message {
-            color: red;
-            font-size: 1.2em;
-            text-align: center;
+            font-size: 14px;
+            color: #777;
         }
     </style>
 </head>
 <body>
-    <h1>Web Crawler</h1>
-    <div class="container">
-        <form method="post" action="/">
-            <label for="url">Enter a URL to crawl:</label>
-            <input type="text" id="url" name="url" placeholder="https://example.com" required>
+    <header>
+        <h1>Web Crawler Tool</h1>
+        <p>Input a website URL and specify the depth to crawl its links.</p>
+    </header>
+    <main>
+        <form method="POST">
+            <label for="url">Website URL:</label>
+            <input type="text" id="url" name="url" placeholder="Enter a valid URL (e.g., https://example.com)" required>
+
+            <label for="depth">Crawl Depth:</label>
+            <input type="number" id="depth" name="depth" min="1" max="10" value="2">
+
             <button type="submit">Start Crawling</button>
         </form>
-
-        {% if loading_message %}
-        <p class="loading-message">{{ loading_message }}</p>
+        {% if result %}
+            <div class="result">
+                <h2>Results</h2>
+                {{ result|safe }}
+            </div>
         {% endif %}
-
-        {% if message %}
-        <p class="message">{{ message }}</p>
-        {% endif %}
-
-        {% if num_visited %}
-        <p class="num-visited">Total number of links visited: {{ num_visited }}</p>
-        {% endif %}
-
-
-
-        {% if crawled_links %}
-            <h2>Crawled URLs:</h2>
-            <ul style="list-style-type: none; padding-left: 0;">
-                {% for url, links in crawled_links.items() %}
-                    <li style="margin-bottom: 20px; background-color: #f9f9f9; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                        Visiting {{ url }},
-                        {% if links %}
-                            in here we found these links:
-                            <ul style="list-style-type: disc; padding-left: 20px;">
-                                {% for link in links %}
-                                    <li style="margin: 5px 0; font-size: 1.1em; color: #007BFF;">
-                                        <a href="{{ link }}" style="text-decoration: none; color: inherit; font-weight: bold;">{{ link }}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            and no links found.
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-
-
-
-    </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 Web Crawler Tool. All rights reserved.</p>
+    </footer>
 </body>
 </html>
 

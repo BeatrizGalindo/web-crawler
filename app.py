@@ -1,34 +1,36 @@
-import os
-from flask import Flask, request, render_template
-import logging
-from web_crawler import crawl_website
+import time
 
+from flask import Flask, request, render_template
+from web_crawler_with_async import crawl_website  # Assuming the above code is in a file named crawler.py
+import os
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    crawled_links = {}
-    num_visited = 0
-    message = None
-    loading_message = None
-    if request.method == "POST":
-        start_url = request.form.get("url")
-        if start_url:
-            try:
-                loading_message = "We are fetching the links, please wait a moment..."
+    if request.method == 'POST':
+        url = request.form.get('url')
+        depth = int(request.form.get('depth', 2))  # Default depth to 2 if not provided
 
-                # Call crawl_website and get detailed results
-                crawled_links = crawl_website(start_url, max_depth=2, max_workers=5)
-                num_visited = sum(len(links) for links in crawled_links.values())
-                if not crawled_links:
-                    message = "No URLs found :("
-            except Exception as e:
-                logging.error(f"Error during crawling: {e}")
-                message = "An error occurred during crawling"
+        # Call the crawl logic
+        crawled_links = crawl_website(url, depth)
+        print(crawled_links)
 
-    return render_template('index.html', crawled_links=crawled_links, message=message, num_visited=num_visited, loading_message=loading_message)
+        # Build a result string to show all found links
+        results = []
+        for key, value in crawled_links.items():
+            links_html = "<ul>" + "".join(
+                f"<li><a href='{link}' target='_blank'>{link}</a></li>" for link in value) + "</ul>"
+            results.append(
+                f"<h3>For <a href='{key}' target='_blank'>{key}</a>, we found {len(value)} links:</h3>{links_html}")
 
-if __name__ == "__main__":
-    # Use Render's dynamic port or default to 5001 for local testing
+        # Join all results with line breaks
+        result = "".join(results)
+
+        return render_template('index.html', result=result, timestamp=int(time.time()))
+
+    return render_template('index.html', result=None,timestamp=int(time.time()))
+
+
+if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5001))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
