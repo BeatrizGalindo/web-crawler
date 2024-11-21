@@ -171,10 +171,10 @@ but they would not be feasible within the 4-hour timeline. On top of the improve
 
 - **Testing Coverage**: Expand test cases to cover more scenarios.
 - **Cache**: Adding some caching system to access easily the most search links, in this case monzo.com.
-- **Politeness Policy**: Introduce delay between requests to avoid overloading servers.
+- **Politeness policy**: Adding Semaphore will help limit the number of concurrent tasks, preventing overloading resources and ensuring better control over execution.
+- **Feed-forward for long running crawling task**: The UX does not give any indication to the user that a search is ongoing. I did not prioritise this since you specifically said you don't care about UI/UX, but if I had more time I'd change that
 - **Data Export**: Enable saving results to files in formats like JSON or CSV.
 - **Error handling**: app can crash due to long scraping times, need better error handling
-- **Sempahore**: Adding Semaphore will help limit the number of concurrent tasks, preventing overloading resources and ensuring better control over execution.
-- **JavaScript:**: in the results of the links 
-- **Backslash** : at the end of the url
+- **More url parsing**: Certain links that start with 'javascript:' are erroneously picked up by my crawler. Would remove if i had more time.
+- **Backslash** : Certain links can be duplicated, because some have a trailing backslash ("monzo.com/") and some don't ("monzo.com"). These are seen as 
 - **Certain websites crawls display miscellaneous errors**: If I had more time I would inspect each of these errors and fix them.Example: An unexpected error occurred: 'utf-8' codec can't decode byte 0xe2 in position 10: invalid continuation byte
