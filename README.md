@@ -46,15 +46,16 @@ pytest --cov=website_crawler tests/
 
 ## DESIGN OVERVIEW
 
-- **Web Crawler (web_crawler_with_async.py)**
+- **Web Crawler (website_crawler.py)**
   - Asynchronously fetches and processes web pages. 
   - Extracts and normalises links from web pages, ensuring only links within the same domain are considered.
   - Reads and respects `robots.txt` crawling rules to ensure ethical crawling.
 
 
-- **Testing Suite (test_web_crawler_with_async.py)**
-  - Contains unit tests for key functionalities in web_crawler_with_async.py. 
+- **Testing Suite (test_website_crawler.py)**
+  - Contains unit tests for key functionalities in website_crawler.py. 
   - Uses mocking to simulate network responses and validate the crawler's functionality under different scenarios.
+  - Uses pytest with asyncio for proper mocking of asynchronous functions. 
 
 
 - **Web Interface (app.py)**
@@ -73,10 +74,11 @@ pytest --cov=website_crawler tests/
     - Build Job:
       - Checks out the repository. 
       - Sets up the Python 3.13 environment. 
+      - Sets up venv virtual environment.
       - Installs required dependencies from requirements.txt. 
     - Test Job:
       - Ensures tests pass after building the application. 
-      - Runs unit tests using `unittest` and measures coverage using `coverage`. 
+      - Runs unit tests and measures coverage. 
     - Deploy Job:
       - Deploys the application to Render after tests succeed. 
       - Uses a secret environment variable `RENDER_DEPLOY_HOOK` for secure deployment.
@@ -85,7 +87,7 @@ pytest --cov=website_crawler tests/
 ## DEPLOYMENT TO GITHUB ACTIONS AND RENDER.COM
 
 The project is integrated with `GitHub Actions` for continuous integration (CI), 
-ensuring code quality and automated testing. The CI pipeline includes:
+ensuring code quality and automated testing. The CI pipeline includes: build, tests and deploy.
 With this setup, every change to the codebase triggers an automated pipeline that tests and deploys the app to `Render`, 
 allowing users to see the crawler in action via the web interface.
 
@@ -98,7 +100,7 @@ allowing users to see the crawler in action via the web interface.
 
 You can find the website in this link: https://web-crawler-sy4n.onrender.com
 
-#### Notes
+#### --> Notes
 - Due to running my code on the free tier, the server might be down due to inactivity. A refresh usually does the trick. If that doesn't work, sometimes I have to manually redeploy.
 - The crawler is obviously slower on Render.com compared to locally. This is out of my control, but I still wanted to implement a CI/CD pipeline. 
 
@@ -171,9 +173,16 @@ For this project, `lxml` was chosen for its speed and ability to handle poorly f
 ## **5. Test Coverage**
 
  The test suite covers key functionality, including edge cases like robots.txt compliance and invalid URLs.
-- **Potential Improvement**: 
-  - Add tests for concurrency (e.g., ensuring thread safety) and edge cases like circular links. 
+- **Potential Improvement**:
   - Adding integration test with an outside website that we are confident on the number of links displayed.
+  - Adding smoke tests for a small test in production.
+  - Adding e2e tests if we had a staging environment.
+  - If the project was more complex, I'd recommend adding component tests.
+
+Below you can see an image of the test coverage on the website_crawler with 88% on website_crawler.py:
+
+![Coverage](images/coverage.png)
+
 
 ## Additional future work
 
@@ -188,5 +197,5 @@ but they would not be feasible within the 4-hour timeline. On top of the improve
 - **Data Export**: Enable saving results to files in formats like JSON or CSV.
 - **Error handling**: The app can crash due to long scraping times, with more than 4 hours I'd write better error handling
 - **More url parsing**: Certain links that start with 'javascript:' are erroneously picked up by my crawler. Would remove if i had more time.
-- **Backslash** : Certain links can be duplicated, because some have a trailing backslash ("monzo.com/") and some don't ("monzo.com"). These are seen as 
-- **Certain website crawls display miscellaneous errors**: If I had more time I would inspect each of these errors and fix them.Example: `An unexpected error occurred: 'utf-8' codec can't decode byte 0xe2 in position 10: invalid continuation byte`
+- **Backslash** : Certain links can be duplicated, because some have a trailing backslash ("monzo.com/") and some don't ("monzo.com"). These are seen as unique links by my logic. If I had more time, I'd fix that.
+- **Certain website crawls display miscellaneous errors**: If I had more time I would inspect each of these errors and fix them. Example: `An unexpected error occurred: 'utf-8' codec can't decode byte 0xe2 in position 10: invalid continuation byte`
