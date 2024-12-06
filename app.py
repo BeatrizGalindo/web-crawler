@@ -1,7 +1,7 @@
 import asyncio
 
 import requests
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 
 from website_crawler import WebsiteCrawler
 import os
@@ -22,7 +22,7 @@ def handle_request_exception(error):
 def handle_generic_error(error):
     return render_template('index.html', result=f"<h3>An unexpected error occurred: {str(error)}</h3>")
 
-
+# Web interface route
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -54,6 +54,24 @@ def index():
 
     return render_template('index.html', result=None)
 
+
+# API route
+@app.route('/api/crawl', methods=['POST'])
+def api_crawler():
+    try:
+        data = request.get_json()
+        url = data.get('url')
+        depth = int(data.get('depth', 2))
+        crawler = WebsiteCrawler()
+        crawled_links = crawler.crawl_website(url, depth)
+        if not crawled_links:
+            return jsonify({"message": "No links were found. The page might have blocked or denied access."}), 200
+
+        return jsonify({"url": url, "depth": depth, "links": crawled_links}), 200
+    except ValueError:
+        return jsonify({"error": "Invalid depth value. It must be an integer."}), 400
+    except Exception as e:
+        return jsonify({"error": f"An unexpected error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     # Use Render's dynamic port or default to 5001 for local testing
