@@ -64,10 +64,17 @@ def api_crawler():
         depth = int(data.get('depth', 2))
         crawler = WebsiteCrawler()
         crawled_links = crawler.crawl_website(url, depth)
-        if not crawled_links:
+
+        # Convert any sets in crawled_links to lists to make them JSON serializable
+        crawled_links_serializable = {
+            key: list(value) if isinstance(value, set) else value
+            for key, value in crawled_links.items()
+        }
+
+        if not crawled_links_serializable:
             return jsonify({"message": "No links were found. The page might have blocked or denied access."}), 200
 
-        return jsonify({"url": url, "depth": depth, "links": crawled_links}), 200
+        return jsonify({"url": url, "depth": depth, "links": crawled_links_serializable}), 200
     except ValueError:
         return jsonify({"error": "Invalid depth value. It must be an integer."}), 400
     except Exception as e:
